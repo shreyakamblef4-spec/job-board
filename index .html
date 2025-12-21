@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Board</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #89f8f4e8;
+  }
+
+  header {
+    background: #000;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: #fff;
+    margin: 0 15px;
+    font-weight: 500;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #045a56;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .hero {
+    padding: 50px 15px;
+    background: #9b9b9e;
+    text-align: center;
+    opacity: 0.9;
+  }
+
+  .section {
+    width: 85%;
+    margin: auto;
+    padding: 20px 0;
+  }
+
+  .job-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 7px 70px rgba(0, 0, 0, 0.92);
+    margin: 12px 0;
+    opacity: 0.9;
+    font-size: 20px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 8px 0;
+  }
+
+  .hidden { display: none; }
+
+  .dashboard, .apply-box, .login-box {
+    background: #d4d3d3e6;
+    padding: 20px;
+    border-radius: 10px;
+    width: 85%;
+    margin: auto;
+    box-shadow: 0 50px 60px rgba(0, 0, 0, 0.86);
+  }       
+
+  /* Background Shapes */
+  .bg-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .curve-left {
+    position: absolute;
+    left: -120px;
+    width: 70.5%;
+    height: 100%;
+    background: #3f012e70;
+    clip-path: ellipse(60% 80% at 0% 50%);
+    opacity: 0.2;
+  }
+
+  .curve-right {
+    position: absolute;
+    right: -120px;
+    bottom: -20%;
+    width: 70%;
+    height: 100%;
+    background: rgb(9, 9, 141);
+    clip-path: ellipse(70% 70% at 100% 80%);
+    opacity: 0.2;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-wrap">
+    <div class="curve-left"></div>
+    <div class="curve-right"></div>
+</div>
+
+<header>
+    <h1>Job Board</h1>
+    <nav>
+        <a href="#" onclick="showPage('home')">Home</a>
+        <a href="#" onclick="showPage('jobs')">Job Listings</a>
+        <a href="#" onclick="showPage('login')">Login</a>
+    </nav>
+</header>
+
+<!-- HOME PAGE -->
+<div id="home" class="page">
+    <section class="hero">
+        <h2>Find Your Dream Job</h2>
+        <p>Welcome! Browse featured jobs and start your journey.</p>
+        <a class="btn" onclick="showPage('jobs')">Browse Jobs</a>
+    </section>
+    <div class="section">
+        <h3>Featured Jobs</h3>
+        <div id="featured-jobs"></div>
+    </div>
+</div>
+
+<!-- JOB LISTINGS -->
+<div id="jobs" class="page hidden">
+    <div class="section">
+        <h2>Job Listings</h2>
+        <input type="text" id="searchInput" placeholder="Search job title..." onkeyup="searchJobs()">
+        <div id="job-list"></div>
+    </div>
+</div>
+
+<!-- JOB DETAIL -->
+<div id="job-detail" class="page hidden">
+    <div class="section" id="job-detail-box"></div>
+    <a class="btn" onclick="showPage('apply')">Apply Now</a>
+</div>
+
+<!-- APPLY PAGE -->
+<div id="apply" class="page hidden">
+    <div class="apply-box">
+        <h2>Apply for Job</h2>
+        <form onsubmit="submitApplication(event)">
+            <label>Name</label>
+            <input type="text" required>
+            <label>Email</label>
+            <input type="email" required>
+            <label>Upload Resume</label>
+            <input type="file" required>
+            <button class="btn">Submit Application</button>
+        </form>
+    </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="login" class="page hidden">
+    <div class="login-box">
+        <h2>User Login</h2>
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button class="btn" onclick="showDashboard()">Login</button>
+    </div>
+</div>
+
+<!-- EMPLOYER DASHBOARD -->
+<div id="employer-dashboard" class="page hidden">
+    <div class="dashboard">
+        <h2>Employer Dashboard</h2>
+        <h3>Post New Job</h3>
+        <form onsubmit="postJob(event)">
+            <input type="text" id="jobTitle" placeholder="Job Title" required>
+            <input type="text" id="companyName" placeholder="Company Name" required>
+            <textarea id="jobDesc" placeholder="Job Description" required></textarea>
+            <button class="btn">Post Job</button>
+        </form>
+        <h3>Posted Jobs</h3>
+        <div id="employer-jobs"></div>
+    </div>
+</div>
+
+<!-- CANDIDATE DASHBOARD -->
+<div id="candidate-dashboard" class="page hidden">
+    <div class="dashboard">
+        <h2>Candidate Dashboard</h2>
+        <h3>Your Profile</h3>
+        <input type="text" placeholder="Name">
+        <input type="email" placeholder="Email">
+        <button class="btn">Update</button>
+        <h3>Your Applications</h3>
+        <p>No applications yet.</p>
+    </div>
+</div>
+
+<script>
+let jobs = [
+    { id: 1, title: "Frontend Developer", company: "Tech Corp", description: "Build UI using React." },
+    { id: 2, title: "Backend Developer", company: "DataSoft", description: "API development using Node.js." },
+];
+
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+    document.getElementById(pageId).classList.remove("hidden");
+}
+
+function loadJobs() {
+    document.getElementById("job-list").innerHTML = jobs.map(job => `
+        <div class="job-card">
+            <h3>${job.title}</h3>
+            <p>${job.company}</p>
+            <a class="btn" onclick="showJobDetail(${job.id})">View Details</a>
+        </div>
+    `).join("");
+
+    document.getElementById("featured-jobs").innerHTML = jobs.slice(0,2).map(job => `
+        <div class="job-card">
+            <h4>${job.title}</h4>
+            <p>${job.company}</p>
+        </div>
+    `).join("");
+}
+loadJobs();
+
+function searchJobs() {
+    let text = document.getElementById("searchInput").value.toLowerCase();
+    let filtered = jobs.filter(j => j.title.toLowerCase().includes(text));
+    document.getElementById("job-list").innerHTML = filtered.map(job => `
+        <div class="job-card">
+            <h3>${job.title}</h3>
+            <p>${job.company}</p>
+            <a class="btn" onclick="showJobDetail(${job.id})">View Details</a>
+        </div>
+    `).join("");
+}
+
+function showJobDetail(id) {
+    let job = jobs.find(j => j.id === id);
+    document.getElementById("job-detail-box").innerHTML = `
+        <h2>${job.title}</h2>
+        <h4>${job.company}</h4>
+        <p>${job.description}</p>
+    `;
+    showPage("job-detail");
+}
+
+function submitApplication(e) {
+    e.preventDefault();
+    alert("Application submitted!");
+}
+
+function showDashboard() {
+    let userType = prompt("Type 'employer' or 'candidate'");
+    if (userType === "employer") showPage("employer-dashboard");
+    else showPage("candidate-dashboard");
+}
+
+function postJob(e) {
+    e.preventDefault();
+    let t = document.getElementById("jobTitle").value;
+    let c = document.getElementById("companyName").value;
+    let d = document.getElementById("jobDesc").value;
+    jobs.push({ id: jobs.length + 1, title: t, company: c, description: d });
+    alert("Job Posted Successfully!");
+    loadJobs();
+}
+</script>
+</body>
+</html>
